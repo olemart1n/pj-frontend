@@ -20,7 +20,7 @@ export default component$(() => {
       <div class="relative">
         {list.value.length > 0 ? (
           list.value.map((ing: Ingredient, i: number) => (
-            <MealIngredient props={ing} key={i} index={i} />
+            <MealIngredient props={ing} key={i} />
           ))
         ) : (
           <div>Velg et måltid eller legg til ingredientser selv</div>

@@ -3,6 +3,7 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import { dataOrError, getFetchWithJwt } from "~/dryFunctions";
 export const useDbGetUser = routeLoader$(async (reqEv) => {
   const cookie = reqEv.cookie.get("jwt");
+  if (!cookie) return;
   const res = await getFetchWithJwt("/api/users/user", cookie);
   console.log(res);
   return dataOrError(res);

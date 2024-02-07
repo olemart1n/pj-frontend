@@ -1,12 +1,12 @@
 import { component$, useContext } from "@builder.io/qwik";
 import type { Signal } from "@builder.io/qwik";
 import { useDbDeleteMealList } from "~/routes/[id]";
-import { appContext } from "~/context";
+import { mealContext } from "~/context";
 interface DelteModalProps {
   deleteModal: Signal;
 }
 export const MealDeleteList = component$<DelteModalProps>(({ deleteModal }) => {
-  const app = useContext(appContext);
+  const meal = useContext(mealContext);
   const action = useDbDeleteMealList();
   return (
     <div
@@ -25,9 +25,11 @@ export const MealDeleteList = component$<DelteModalProps>(({ deleteModal }) => {
       <button
         class=" mx-auto block rounded border p-3 hover:bg-red-300"
         onClick$={async () => {
-          const req = await action.submit({ mealId: app.meal && app.meal.id });
+          const req = await action.submit({
+            mealId: meal.meal && meal.meal.id,
+          });
           if (req.status === 200) {
-            app.meal && (app.meal.ingredients = []);
+            meal.ingredients = [];
             deleteModal.value = !deleteModal.value;
           }
         }}
