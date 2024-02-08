@@ -11,6 +11,7 @@ export interface MealState {
   meal: Meal | null;
   ingredients: Ingredient[];
   animation: IngredientAnimation;
+  listDeleted: boolean;
 }
 interface IngredientAnimation {
   idOfComponentToMove: number;

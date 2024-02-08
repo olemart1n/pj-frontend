@@ -30,11 +30,12 @@ export const MealDeleteList = component$<DelteModalProps>(({ deleteModal }) => {
           });
           if (req.status === 200) {
             meal.ingredients = [];
+            meal.listDeleted = true;
             deleteModal.value = !deleteModal.value;
           }
         }}
       >
-        Slett
+        OK
       </button>
     </div>
   );

@@ -20,6 +20,7 @@ import { observer } from "~/utilities/observer";
 export const useDbInsertIngredient = routeAction$(async (formData, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
+
   const response = postFetchWithJwt("/api/meals/ingredients", jwt, formData);
   return response;
 });
@@ -71,11 +72,20 @@ export default component$(() => {
   const routeLoaderData = useDbGetMeal();
   const ingredientsArray = useSignal<Ingredient[]>();
   const isAddingIngredient = useSignal(false);
+  const isDropDown = useSignal(false);
   useTask$(() => {
     if (!routeLoaderData.value?.data) return;
     mealState.meal = routeLoaderData.value.data.meal;
     mealState.ingredients = routeLoaderData.value.data.ingredients;
     ingredientsArray.value = routeLoaderData.value.data.ingredients;
+  });
+
+  useTask$(({ track }) => {
+    track(() => mealState.listDeleted);
+    if (mealState.listDeleted) {
+      ingredientsArray.value = [];
+      mealState.listDeleted = false;
+    }
   });
 
   useTask$(({ track }) => {
@@ -102,7 +112,7 @@ export default component$(() => {
       component.style.transform = `translateY(${yDistance}px)`;
       requestAnimationFrame(() => {
         component.style.transition = "transform 1000ms ease-in-out";
-        component.style.zIndex = "30";
+        component.style.zIndex = "20";
         component.style.transform = "";
         component.style.transition = "transform 1000ms ease-in-out";
       });
@@ -115,28 +125,32 @@ export default component$(() => {
       <div class="flex justify-around p-1">
         <h1 class="my-auto text-xl dark:text-slate-50">{day}</h1>
         <div class="flex flex-row gap-2">
-          <div class="relative z-10">
+          <div class="relative z-30">
             <button
-              onClick$={() =>
-                (isAddingIngredient.value = !isAddingIngredient.value)
-              }
+              onClick$={() => {
+                isAddingIngredient.value = !isAddingIngredient.value;
+                isDropDown.value = false;
+              }}
               class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             >
               + vare
             </button>
             {isAddingIngredient.value && (
               <div
-                class="absolute mt-2 origin-top-right  -translate-x-1/2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                class="absolute z-40 mt-2 origin-top-right  -translate-x-1/2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="menu-button"
                 tabIndex={-1}
               >
-                <MealIngredientForm form={isAddingIngredient} />
+                <MealIngredientForm
+                  form={isAddingIngredient}
+                  dropdown={isDropDown}
+                />
               </div>
             )}
           </div>
-          <MealDropdown form={isAddingIngredient} />
+          <MealDropdown form={isAddingIngredient} dropdown={isDropDown} />
         </div>
       </div>
 

@@ -3,7 +3,7 @@ export interface Ingredient {
   name: string;
   unit?: string;
   quantity?: string | number;
-  purchased: boolean;
+  purchased?: boolean;
   store?: string;
   is_fresh_ingredient: boolean;
   created_at?: string;

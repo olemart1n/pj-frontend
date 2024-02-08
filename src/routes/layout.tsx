@@ -81,6 +81,7 @@ export default component$(() => {
       targetPositionTop: 0,
       finished: false,
     },
+    listDeleted: false,
   });
   useContextProvider(appContext, appState);
   useContextProvider(mealContext, mealState);
@@ -92,7 +93,7 @@ export default component$(() => {
 
   return (
     <>
-      <header class={"bg-slate-200 p-0 " + app.theme}>
+      <header class={" p-0 " + app.theme}>
         <Nav />
       </header>
 

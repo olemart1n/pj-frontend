@@ -3,14 +3,13 @@ import { MealDeleteList } from "../meal-delete-list";
 
 interface DropdownProps {
   form: Signal;
+  dropdown: Signal;
 }
-export const MealDropdown = component$<DropdownProps>(({ form }) => {
-  const viewDropdown = useSignal(false);
-
+export const MealDropdown = component$<DropdownProps>(({ form, dropdown }) => {
   const deleteModal = useSignal(false);
 
   return (
-    <div class="relative z-10 inline-block text-left">
+    <div class="relative z-30 inline-block text-left">
       <div>
         <button
           type="button"
@@ -19,7 +18,7 @@ export const MealDropdown = component$<DropdownProps>(({ form }) => {
           aria-expanded="true"
           aria-haspopup="true"
           onClick$={() => {
-            viewDropdown.value = !viewDropdown.value;
+            dropdown.value = !dropdown.value;
             form.value = false;
           }}
         >
@@ -39,7 +38,7 @@ export const MealDropdown = component$<DropdownProps>(({ form }) => {
         </button>
       </div>
 
-      {viewDropdown.value && (
+      {dropdown.value && (
         <div
           class="absolute right-0  mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           role="menu"
@@ -49,7 +48,7 @@ export const MealDropdown = component$<DropdownProps>(({ form }) => {
           <div class="py-1" role="none">
             <button
               type="button"
-              class="block px-4 py-2 text-sm text-gray-700"
+              class="block w-full px-4 py-2 text-sm text-gray-700"
               role="menuitem"
               onClick$={() => (deleteModal.value = true)}
             >
@@ -57,8 +56,9 @@ export const MealDropdown = component$<DropdownProps>(({ form }) => {
             </button>
             <button
               type="button"
-              class="block px-4 py-2 text-sm text-gray-700"
+              class="block w-full bg-gray-200 px-4 py-2 text-sm text-gray-700 line-through"
               role="menuitem"
+              disabled
             >
               Kopier
             </button>

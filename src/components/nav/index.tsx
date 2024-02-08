@@ -131,7 +131,7 @@ export default component$(() => {
           </Link>
         )}
         <button
-          class="relative mx-auto flex h-4 w-9 items-center rounded-full p-1 shadow transition duration-300 dark:outline  dark:outline-1 lg:mx-0"
+          class="relative mx-auto my-2 flex h-4 w-9 items-center rounded-full p-1 shadow shadow-gray-950 transition  duration-300 dark:outline dark:outline-1 lg:mx-0 lg:my-0"
           onClick$={() => {
             if (app.theme === "dark") {
               app.theme = "light";
