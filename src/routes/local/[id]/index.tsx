@@ -30,6 +30,15 @@ export default component$(() => {
   });
 
   useTask$(({ track }) => {
+    track(() => mealState.listDeleted);
+    if (mealState.listDeleted) {
+      ingredientsArray.value = [];
+      localStorage.removeItem(urlId);
+      mealState.listDeleted = false;
+    }
+  });
+
+  useTask$(({ track }) => {
     track(() => mealState.animation.idOfComponentToMove);
     if (mealState.animation.idOfComponentToMove === 0) return;
     const itemId = mealState.animation.idOfComponentToMove;
