@@ -35,7 +35,6 @@ export const dbTogglePurchased = server$(async function (data) {
   const reqEv = this;
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
-  console.log(jwt);
   await fetch(import.meta.env.PUBLIC_SERVER_URL + "/api/meals/ingredients", {
     method: "PATCH",
     headers: {

@@ -1,20 +1,24 @@
-import { component$, useSignal } from "@builder.io/qwik";
+import { component$, useSignal, type Signal } from "@builder.io/qwik";
 import { Link, useNavigate } from "@builder.io/qwik-city";
 import { Icon } from "./icon";
 import { appContext } from "~/context";
 import { useContext } from "@builder.io/qwik";
 import { LuSun, LuMoon } from "@qwikest/icons/lucide";
 import { useSetThemeCookie } from "~/routes/layout";
-export default component$(() => {
+interface MobileMenu {
+  isMobileMenu: Signal;
+}
+export default component$<MobileMenu>(({ isMobileMenu }) => {
   const app = useContext(appContext);
   const nav = useNavigate();
-
   const loc = useSignal<string>("/");
   const themeToggleAction = useSetThemeCookie();
-  const isMobileMenu = useSignal(false);
+
   return (
     <nav
-      class=" mx-auto flex w-full flex-wrap items-center justify-between dark:bg-sky-950 dark:text-white lg:p-4 lg:px-8"
+      class={
+        " mx-auto flex w-full flex-wrap items-center justify-between dark:bg-sky-950 dark:text-white lg:p-4 lg:px-8"
+      }
       aria-label="Global"
     >
       <div class="flex p-3 lg:p-0">
@@ -28,12 +32,11 @@ export default component$(() => {
         <button
           type="button"
           class={
-            "-m-2.5 inline-flex items-center justify-center rounded-md p-2 text-gray-700 " +
+            " -m-2.5 inline-flex items-center justify-center rounded-md p-2 text-gray-700 " +
             (isMobileMenu.value && " ring-4 ring-blue-300")
           }
           onClick$={() => {
             isMobileMenu.value = !isMobileMenu.value;
-            console.log("hello");
           }}
         >
           <span class="sr-only">Open main menu</span>
@@ -59,8 +62,10 @@ export default component$(() => {
         aria-modal="true"
         id=""
         class={
-          "z-20 w-1/2 flex-row justify-around gap-2  p-2 text-lg text-gray-900 dark:text-white lg:flex " +
-          (isMobileMenu.value ? "flex w-full flex-col text-center" : " hidden")
+          "z-20 w-1/2 justify-around gap-2 p-2  text-lg text-gray-900 dark:text-white lg:flex lg:flex-row " +
+          (isMobileMenu.value
+            ? " fixed top-16 flex w-full flex-col bg-sky-950 text-center"
+            : " hidden")
         }
       >
         {app.isLoggedIn && (
@@ -72,19 +77,12 @@ export default component$(() => {
                 (loc.value === "handleliste" && "underline")
               }
               onClick$={() => {
-                isMobileMenu.value = false;
                 loc.value = "handleliste";
+                isMobileMenu.value = false;
               }}
             >
               Handleliste
             </Link>
-            {/* <Link
-              href="#"
-              class="text-md font-semibold leading-6 "
-              onClick$={() => isMobileMenu.value = false}
-            >
-              Chat
-            </Link> */}
             <Link
               href="/profil"
               class={
@@ -92,8 +90,8 @@ export default component$(() => {
                 (loc.value === "profil" && "underline")
               }
               onClick$={() => {
-                isMobileMenu.value = false;
                 loc.value = "profil";
+                isMobileMenu.value = false;
               }}
             >
               Profil
@@ -125,7 +123,7 @@ export default component$(() => {
           <Link
             href="/logg-inn"
             class="text-md  font-semibold leading-6 "
-            onClick$={() => (isMobileMenu.value = !isMobileMenu.value)}
+            onClick$={() => (isMobileMenu.value = false)}
           >
             Logg inn <span aria-hidden="true">&rarr;</span>
           </Link>

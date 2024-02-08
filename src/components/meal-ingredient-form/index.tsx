@@ -33,7 +33,7 @@ export const MealIngredientForm = component$<ToggleDropDown>(
     });
 
     return (
-      <div class="z-30 w-64 text-gray-800">
+      <div class="z-30 w-72 p-2 text-gray-800">
         <h2 class="m-3">Legg til vare</h2>
         <form preventdefault:submit ref={formData}>
           <div class="relative mb-3">

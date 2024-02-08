@@ -5,6 +5,9 @@ import {
   useContext,
   useStore,
   useContextProvider,
+  useSignal,
+  useOnDocument,
+  $,
 } from "@builder.io/qwik";
 import { appContext, mealContext, type MealState, type App } from "~/context";
 import { routeAction$, routeLoader$ } from "@builder.io/qwik-city";
@@ -65,6 +68,20 @@ export const useDbCheckJwt = routeLoader$(async (reqEv) => {
 export default component$(() => {
   const serverTime = useServerTimeLoader();
   const routeLoader = useDbCheckJwt();
+  const isMobileMenuActive = useSignal(false);
+  const headerDiv = useSignal<HTMLElement>();
+  useOnDocument(
+    "click",
+    $((event) => {
+      if (!headerDiv.value) return;
+      if (
+        isMobileMenuActive.value &&
+        event.clientY > headerDiv.value.clientHeight + headerDiv.value.clientTop
+      ) {
+        isMobileMenuActive.value = false;
+      }
+    }),
+  );
   const appState: App = useStore({
     isLoggedIn: false,
     ping: false,
@@ -91,8 +108,8 @@ export default component$(() => {
 
   return (
     <>
-      <header class=" dark p-0 ">
-        <Nav />
+      <header class=" dark z-40  p-0" ref={headerDiv}>
+        <Nav isMobileMenu={isMobileMenuActive} />
       </header>
 
       <main
