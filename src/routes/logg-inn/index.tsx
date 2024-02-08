@@ -153,7 +153,7 @@ export default component$(() => {
           <div>
             <button
               type="submit"
-              class="text-md flex w-full justify-center rounded-md bg-red-300 px-3 py-1.5 font-semibold leading-6 text-white shadow-sm hover:bg-red-200 sm:mx-auto sm:w-1/2"
+              class="text-md flex w-full justify-center rounded-md bg-sky-950 px-3 py-1.5 font-semibold leading-6 text-white shadow-sm hover:bg-sky-500 sm:mx-auto sm:w-1/2"
               onClick$={sign}
             >
               {isSigningUp.value ? "Registrer" : "Logg inn"}

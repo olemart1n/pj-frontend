@@ -19,6 +19,7 @@ export default component$(() => {
   const day = urlId.replace("-", " ");
   const ingredientsArray = useSignal<Ingredient[]>([]);
   const isAddingIngredient = useSignal(false);
+  const isDropDown = useSignal(false);
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ track }) => {
     track(() => app.ping);
@@ -52,7 +53,6 @@ export default component$(() => {
     localStorage.setItem(urlId, JSON.stringify(updatedList));
     ingredientsArray.value = updatedList;
 
-    // mealState.animation.isMoving = true;
     observer(itemId).then((component) => {
       const top = component.getBoundingClientRect().top;
       const yDistance = mealState.animation.originPositionTop - (top as number);
@@ -72,12 +72,13 @@ export default component$(() => {
     <>
       <div class="flex justify-around p-1">
         <h1 class="my-auto text-xl dark:text-slate-50">{day}</h1>
-        <div class="flex flex-row gap-2">
+        <div class="z-40 flex flex-row gap-2">
           <div class="relative z-10">
             <button
-              onClick$={() =>
-                (isAddingIngredient.value = !isAddingIngredient.value)
-              }
+              onClick$={() => {
+                isAddingIngredient.value = !isAddingIngredient.value;
+                isDropDown.value = false;
+              }}
               class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             >
               + vare
@@ -90,11 +91,14 @@ export default component$(() => {
                 aria-labelledby="menu-button"
                 tabIndex={-1}
               >
-                <LocalMealIngredientForm form={isAddingIngredient} />
+                <LocalMealIngredientForm
+                  form={isAddingIngredient}
+                  dropdown={isDropDown}
+                />
               </div>
             )}
           </div>
-          <LocalMealDropdown form={isAddingIngredient} />
+          <LocalMealDropdown form={isAddingIngredient} dropdown={isDropDown} />
         </div>
       </div>
 

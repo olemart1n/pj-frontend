@@ -10,9 +10,10 @@ import { appContext } from "~/context";
 import { locallySaveIngredient } from "~/utilities/localstorage";
 interface ToggleDropDown {
   form: Signal;
+  dropdown: Signal;
 }
 export const LocalMealIngredientForm = component$<ToggleDropDown>(
-  ({ form }) => {
+  ({ form, dropdown }) => {
     const app = useContext(appContext);
     const urlId = useLocation().params.id;
     const formData = useSignal<HTMLFormElement>();
@@ -21,12 +22,12 @@ export const LocalMealIngredientForm = component$<ToggleDropDown>(
       const inputs = Object.fromEntries(data.entries());
       locallySaveIngredient(urlId, inputs);
       form.value = false;
-
+      dropdown.value = false;
       app.ping = true;
     });
 
     return (
-      <div class="z-30 w-64 text-gray-800">
+      <div class="z-30 w-72 p-2 text-gray-800">
         <h2 class="m-3">Legg til vare</h2>
         <form preventdefault:submit ref={formData}>
           <div class="relative mb-3">
@@ -35,11 +36,11 @@ export const LocalMealIngredientForm = component$<ToggleDropDown>(
               class=" peer block min-h-[auto] w-full rounded border px-3 py-[0.32rem] leading-[1.6] transition-all duration-200 ease-linear focus:placeholder:opacity-100 "
               id="Navn"
               name="name"
-              placeholder="Navn"
+              placeholder="Vare"
               autoComplete="off"
               required
             />
-            <p class="absolute right-2 top-2 h-1 w-1 font-bold text-red-300">
+            <p class="absolute right-2 top-2 h-1 w-1 text-xl font-bold text-red-300">
               *
             </p>
           </div>

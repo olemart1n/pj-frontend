@@ -42,11 +42,11 @@ export const MealIngredientForm = component$<ToggleDropDown>(
               class=" peer block min-h-[auto] w-full rounded border px-3 py-[0.32rem] leading-[1.6] transition-all duration-200 ease-linear focus:placeholder:opacity-100 "
               id="Navn"
               name="name"
-              placeholder="Navn"
+              placeholder="Vare"
               autoComplete="off"
               required
             />
-            <p class="absolute right-2 top-2 h-1 w-1 font-bold text-red-300">
+            <p class="absolute right-2 top-2 h-1 w-1 text-xl font-bold text-red-300">
               *
             </p>
           </div>

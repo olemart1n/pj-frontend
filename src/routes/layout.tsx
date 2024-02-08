@@ -33,18 +33,16 @@ export const useServerTimeLoader = routeLoader$(() => {
 
 export const useSetThemeCookie = routeAction$(async (_, reqEv) => {
   const theme = reqEv.cookie.get("theme");
-
   if (theme?.value === "dark") {
     reqEv.cookie.delete("theme");
     reqEv.cookie.set("theme", "light", {
-      sameSite: "lax",
       expires: "999999999",
+      path: "/",
     });
   } else {
-    reqEv.cookie.delete("theme");
     reqEv.cookie.set("theme", "dark", {
-      sameSite: "lax",
       expires: "999999999",
+      path: "/",
     });
   }
 });
@@ -93,13 +91,13 @@ export default component$(() => {
 
   return (
     <>
-      <header class={" p-0 " + app.theme}>
+      <header class=" dark p-0 ">
         <Nav />
       </header>
 
       <main
         class={
-          "bg-slate-200 " +
+          "bg-slate-300  " +
           (app.theme === "dark" &&
             "dark bg-gradient-to-br   from-sky-950 to-sky-700")
         }
