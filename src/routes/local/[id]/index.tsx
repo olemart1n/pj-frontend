@@ -72,8 +72,8 @@ export default component$(() => {
     <>
       <div class="flex justify-around p-1">
         <h1 class="my-auto text-xl dark:text-slate-50">{day}</h1>
-        <div class="z-40 flex flex-row gap-2">
-          <div class="relative z-10">
+        <div class=" flex flex-row gap-2">
+          <div class="relative z-30">
             <button
               onClick$={() => {
                 isAddingIngredient.value = !isAddingIngredient.value;

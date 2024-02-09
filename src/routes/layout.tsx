@@ -108,7 +108,10 @@ export default component$(() => {
 
   return (
     <>
-      <header class=" dark z-40  p-0" ref={headerDiv}>
+      <header
+        class={" z-40 bg-sky-950  p-0" + (app.theme === "dark" && " dark ")}
+        ref={headerDiv}
+      >
         <Nav isMobileMenu={isMobileMenuActive} />
       </header>
 

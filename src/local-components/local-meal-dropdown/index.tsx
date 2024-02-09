@@ -9,7 +9,7 @@ export const LocalMealDropdown = component$<DropdownProps>(
     const deleteModal = useSignal(false);
 
     return (
-      <div class=" z-10 inline-block text-left">
+      <div class=" z-30 inline-block text-left">
         <div>
           <button
             type="button"

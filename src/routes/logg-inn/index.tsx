@@ -1,6 +1,7 @@
 import { component$, useSignal, $, useContext } from "@builder.io/qwik";
 import { useNavigate } from "@builder.io/qwik-city";
 import { appContext } from "~/context";
+
 export default component$(() => {
   const app = useContext(appContext);
   const nav = useNavigate();

@@ -17,7 +17,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
   return (
     <nav
       class={
-        " mx-auto flex w-full flex-wrap items-center justify-between dark:bg-sky-950 dark:text-white lg:p-4 lg:px-8"
+        " mx-auto flex w-full flex-wrap items-center justify-between text-slate-200 lg:p-4 lg:px-8"
       }
       aria-label="Global"
     >
@@ -32,7 +32,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
         <button
           type="button"
           class={
-            " -m-2.5 inline-flex items-center justify-center rounded-md p-2 text-gray-700 " +
+            " -m-2.5 inline-flex items-center justify-center rounded-md p-2 text-slate-200 " +
             (isMobileMenu.value && " ring-4 ring-blue-300")
           }
           onClick$={() => {
@@ -73,7 +73,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
             <Link
               href="/handleliste"
               class={
-                " font-semibold leading-6  " +
+                " font-semibold leading-6 text-slate-200 " +
                 (loc.value === "handleliste" && "underline")
               }
               onClick$={() => {
@@ -86,7 +86,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
             <Link
               href="/profil"
               class={
-                " font-semibold leading-6  " +
+                " font-semibold leading-6 text-slate-200 " +
                 (loc.value === "profil" && "underline")
               }
               onClick$={() => {
@@ -112,7 +112,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
                     }
                   });
                 }}
-                class="text-sm font-semibold leading-6"
+                class="text-sm font-semibold leading-6 text-slate-200"
               >
                 Logg ut <span aria-hidden="true">&rarr;</span>
               </button>
@@ -122,7 +122,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
         {!app.isLoggedIn && (
           <Link
             href="/logg-inn"
-            class="text-md  font-semibold leading-6 "
+            class="text-md  font-semibold leading-6 text-slate-200 "
             onClick$={() => (isMobileMenu.value = false)}
           >
             Logg inn <span aria-hidden="true">&rarr;</span>
