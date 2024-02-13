@@ -1,4 +1,10 @@
-import { component$, useContext, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useContext,
+  useSignal,
+  useStore,
+  useTask$,
+} from "@builder.io/qwik";
 import {
   useLocation,
   routeAction$,
@@ -7,7 +13,7 @@ import {
 } from "@builder.io/qwik-city";
 import { MealIngredient } from "~/components/meal-ingredient";
 import { MealDropdown } from "~/components/meal-dropdown";
-import { mealContext } from "~/context";
+// import { Loader } from "~/components/loader";
 import type { Ingredient, Meal } from "~/utilities/types";
 import {
   getFetchWithJwt,
@@ -16,6 +22,7 @@ import {
 } from "~/dryFunctions";
 import { MealIngredientForm } from "~/components/meal-ingredient-form";
 import { observer } from "~/utilities/observer";
+import { appContext } from "~/context";
 
 export const useDbInsertIngredient = routeAction$(async (formData, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
@@ -24,12 +31,11 @@ export const useDbInsertIngredient = routeAction$(async (formData, reqEv) => {
   const response = postFetchWithJwt("/api/meals/ingredients", jwt, formData);
   return response;
 });
+
 export const useDbDeleteMealList = routeAction$(async (data, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
-
-  const req = await deleteFetchWithJwt("/api/meals/ingredients", jwt, data);
-  return req;
+  await deleteFetchWithJwt("/api/meals/ingredients", jwt, data);
 });
 export const dbTogglePurchased = server$(async function (data) {
   const reqEv = this;
@@ -48,72 +54,79 @@ export const dbTogglePurchased = server$(async function (data) {
 
 export const useDbGetMeal = routeLoader$(async (reqEv) => {
   interface ResponseObj {
-    data: {
-      meal: Meal;
-      ingredients: Ingredient[];
-    };
-    error: any;
+    meal: Meal;
+    ingredients: Ingredient[];
   }
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return null;
   const name = reqEv.url.pathname.replace(/\//g, "");
-  const res: ResponseObj = await getFetchWithJwt(
+  const { data, error } = await getFetchWithJwt(
     "/api/meals/meal?name=" + name,
     jwt,
   );
-
-  return res;
+  if (error) {
+    return reqEv.fail(404, {
+      error: error,
+    });
+  }
+  return data as ResponseObj;
 });
+
+// COMPONENT STARTS HERE --------------------------------------------------------
 export default component$(() => {
-  const mealState = useContext(mealContext);
+  const app = useContext(appContext);
   const urlId = useLocation().params.id;
   const day = urlId.replace("-", " ");
-  const routeLoaderData = useDbGetMeal();
-  const ingredientsArray = useSignal<Ingredient[]>();
+  //
+  const routeLoader = useDbGetMeal();
+
+  if (routeLoader.value.failed) {
+    return <div>some error occured while fetching relevant data</div>;
+  }
+  const mealStore = useStore(routeLoader.value);
+  const animStore = useStore({
+    idOfComponentToMove: 0,
+    originPositionTop: 0,
+    targetPositionTop: 0,
+  });
   const isAddingIngredient = useSignal(false);
   const isDropDown = useSignal(false);
-  useTask$(() => {
-    if (!routeLoaderData.value?.data) return;
-    mealState.meal = routeLoaderData.value.data.meal;
-    mealState.ingredients = routeLoaderData.value.data.ingredients;
-    ingredientsArray.value = routeLoaderData.value.data.ingredients;
-  });
-
+  const deleteAction = useDbDeleteMealList();
+  // TRACK LIST DELETION
   useTask$(({ track }) => {
-    track(() => mealState.listDeleted);
-    if (mealState.listDeleted) {
-      ingredientsArray.value = [];
-      mealState.listDeleted = false;
-    }
+    track(() => app.listDeleted);
+    if (app.listDeleted === false) return;
+    deleteAction.submit({
+      mealId: mealStore.meal.id,
+    });
+    mealStore.ingredients = [];
+    app.listDeleted = false;
   });
-
+  // REACTING ON ID OF COMPONENT TO MOVE STATE
   useTask$(({ track }) => {
-    track(() => mealState.animation.idOfComponentToMove);
-    if (mealState.animation.idOfComponentToMove === 0) return;
-    if (!ingredientsArray.value) return;
-    const itemId = mealState.animation.idOfComponentToMove;
+    track(() => animStore.idOfComponentToMove);
+    if (animStore.idOfComponentToMove === 0) return;
 
-    const updatedList = ingredientsArray.value.map((ing: Ingredient) => {
+    const itemId = animStore.idOfComponentToMove;
+
+    const updatedList = mealStore.ingredients.map((ing: Ingredient) => {
       if (ing.id === itemId) {
         ing.purchased = !ing.purchased;
         return ing;
       }
       return ing;
     });
-    ingredientsArray.value = updatedList;
+    mealStore.ingredients = updatedList;
 
-    // mealState.animation.isMoving = true;
     observer(itemId).then((component) => {
       const top = component.getBoundingClientRect().top;
-      const yDistance = mealState.animation.originPositionTop - (top as number);
-
+      const yDistance = animStore.originPositionTop - (top as number);
       component.offsetHeight;
       component.style.transform = `translateY(${yDistance}px)`;
       requestAnimationFrame(() => {
+        component.classList.add("animate-zIndexWhileMoving");
         component.style.transition = "transform 1000ms ease-in-out";
-        component.style.zIndex = "20";
         component.style.transform = "";
-        component.style.transition = "transform 1000ms ease-in-out";
       });
     });
     dbTogglePurchased({ id: itemId });
@@ -145,6 +158,8 @@ export default component$(() => {
                 <MealIngredientForm
                   form={isAddingIngredient}
                   dropdown={isDropDown}
+                  ingredientList={mealStore.ingredients}
+                  mealId={mealStore.meal.id}
                 />
               </div>
             )}
@@ -159,16 +174,20 @@ export default component$(() => {
             <h2 class="text-center font-bold dark:text-slate-50">
               Handleliste
             </h2>
-            {ingredientsArray.value?.map(
+            {mealStore.ingredients.map(
               (ing: Ingredient, i: number) =>
-                !ing.purchased && <MealIngredient props={ing} key={i} />,
+                !ing.purchased && (
+                  <MealIngredient props={ing} key={i} animation={animStore} />
+                ),
             )}
           </div>
           <div class="p-2 ">
             <h2 class="mt-20 text-center  dark:text-slate-50">Handlet</h2>
-            {ingredientsArray.value?.map(
+            {mealStore.ingredients.map(
               (ing: Ingredient, i: number) =>
-                ing.purchased && <MealIngredient props={ing} key={i} />,
+                ing.purchased && (
+                  <MealIngredient props={ing} key={i} animation={animStore} />
+                ),
             )}
           </div>
         </>

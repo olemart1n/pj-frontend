@@ -9,6 +9,7 @@ export default {
     extend: {
       animation: {
         squareCircle: "squareCircle 1.5s infinite ease",
+        switchList: "zIndexWhileMoving 1s ease",
       },
       keyframes: {
         squareCircle: {
@@ -17,6 +18,10 @@ export default {
           "50%": { aspectRatio: "2/1", borderRadius: "14px" },
           "80%": { aspectRatio: "3/1", borderRadius: "10px" },
           "100%": { aspectRatio: "3/1", borderRadius: "6px" },
+        },
+        zIndexWhileMoving: {
+          "0%": { zIndex: "30" },
+          "100%": { zIndex: "0" },
         },
       },
     },

@@ -1,7 +1,7 @@
 import { component$, useSignal, $, useContext } from "@builder.io/qwik";
 import { useNavigate } from "@builder.io/qwik-city";
 import { appContext } from "~/context";
-
+import { BtnWithLoader } from "~/components/UI/btn-with-loader";
 export default component$(() => {
   const app = useContext(appContext);
   const nav = useNavigate();
@@ -9,10 +9,15 @@ export default component$(() => {
   const username = useSignal("");
   const email = useSignal("");
   const passord = useSignal("");
+  const isLoading = useSignal(false);
+  const errorMessage = useSignal<string | null>();
+  const emailRef = useSignal<HTMLInputElement>();
+
   const sign = $(async () => {
+    if (!emailRef.value?.validity.valid) return;
+    isLoading.value = true;
     const req = await fetch(
       import.meta.env.PUBLIC_SERVER_URL + "/api/auth/sign",
-
       {
         method: "POST",
         headers: {
@@ -29,10 +34,14 @@ export default component$(() => {
 
     const { data, error } = await req.json();
     if (data) {
+      isLoading.value = false;
       app.isLoggedIn = true;
       nav("/");
     }
-    if (error) console.log(error);
+    if (error) {
+      errorMessage.value = error as string;
+      isLoading.value = false;
+    }
     return { data, error };
   });
 
@@ -108,6 +117,7 @@ export default component$(() => {
             </label>
             <div class="mt-2">
               <input
+                ref={emailRef}
                 id="email"
                 name="email"
                 type="email"
@@ -150,15 +160,21 @@ export default component$(() => {
               />
             </div>
           </div>
-
           <div>
-            <button
-              type="submit"
-              class="text-md flex w-full justify-center rounded-md bg-sky-950 px-3 py-1.5 font-semibold leading-6 text-white shadow-sm hover:bg-sky-500 sm:mx-auto sm:w-1/2"
+            {errorMessage.value && (
+              <p class="rounded bg-red-200 p-3">{errorMessage.value}</p>
+            )}
+          </div>
+          <div>
+            <BtnWithLoader
+              isLoading={isLoading}
               onClick$={sign}
+              // isDisabled={
+              //   passord.value.length === 0 && email.value.length === 0
+              // }
             >
               {isSigningUp.value ? "Registrer" : "Logg inn"}
-            </button>
+            </BtnWithLoader>
           </div>
           <p class="mt-10 text-center text-sm text-gray-500 dark:text-white">
             Har du ikke bruker?

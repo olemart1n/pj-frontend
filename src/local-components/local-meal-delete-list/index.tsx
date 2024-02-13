@@ -1,14 +1,13 @@
 import { component$, useContext } from "@builder.io/qwik";
 import type { Signal } from "@builder.io/qwik";
-
-import { mealContext } from "~/context";
 interface DelteModalProps {
   deleteModal: Signal;
   dropdown: Signal;
 }
+import { appContext } from "~/context";
 export const LocalMealDeleteList = component$<DelteModalProps>(
   ({ deleteModal, dropdown }) => {
-    const meal = useContext(mealContext);
+    const app = useContext(appContext);
 
     return (
       <div
@@ -27,9 +26,8 @@ export const LocalMealDeleteList = component$<DelteModalProps>(
         <button
           class=" mx-auto block rounded border p-3 hover:bg-red-300"
           onClick$={() => {
-            meal.ingredients = [];
             deleteModal.value = !deleteModal.value;
-            meal.listDeleted = true;
+            app.listDeleted = true;
             dropdown.value = !dropdown.value;
           }}
         >

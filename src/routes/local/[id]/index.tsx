@@ -4,46 +4,52 @@ import {
   useVisibleTask$,
   useContext,
   useTask$,
+  useStore,
 } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { LocalMealIngredient } from "~/local-components/local-meal-ingredient";
 import type { Ingredient } from "~/utilities/types/ingredient";
 import { LocalMealDropdown } from "~/local-components/local-meal-dropdown";
 import { LocalMealIngredientForm } from "~/local-components/local-meal-ingredient-form";
-import { appContext, mealContext } from "~/context";
+import { appContext } from "~/context";
 import { observer } from "~/utilities/observer";
+
 export default component$(() => {
   const app = useContext(appContext);
-  const mealState = useContext(mealContext);
   const urlId = useLocation().params.id;
   const day = urlId.replace("-", " ");
-  const ingredientsArray = useSignal<Ingredient[]>([]);
   const isAddingIngredient = useSignal(false);
   const isDropDown = useSignal(false);
+  const mealStore = useStore({ meal: null, ingredients: [] as Ingredient[] });
+  const animStore = useStore({
+    idOfComponentToMove: 0,
+    originPositionTop: 0,
+    targetPositionTop: 0,
+  });
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ track }) => {
     track(() => app.ping);
     if (localStorage.getItem(urlId)) {
       const list = JSON.parse(localStorage.getItem(urlId) as string);
-      ingredientsArray.value = list;
+      mealStore.ingredients = list;
     }
     app.ping = false;
   });
 
   useTask$(({ track }) => {
-    track(() => mealState.listDeleted);
-    if (mealState.listDeleted) {
-      ingredientsArray.value = [];
+    track(() => app.listDeleted);
+    if (app.listDeleted) {
+      mealStore.ingredients = [];
       localStorage.removeItem(urlId);
-      mealState.listDeleted = false;
+      app.listDeleted = false;
     }
   });
 
   useTask$(({ track }) => {
-    track(() => mealState.animation.idOfComponentToMove);
-    if (mealState.animation.idOfComponentToMove === 0) return;
-    const itemId = mealState.animation.idOfComponentToMove;
-    const updatedList = ingredientsArray.value.map((ing: Ingredient) => {
+    track(() => animStore.idOfComponentToMove);
+    if (animStore.idOfComponentToMove === 0) return;
+    const itemId = animStore.idOfComponentToMove;
+    const updatedList = mealStore.ingredients.map((ing: Ingredient) => {
       if (ing.id === itemId) {
         ing.purchased = !ing.purchased;
         return ing;
@@ -51,21 +57,19 @@ export default component$(() => {
       return ing;
     });
     localStorage.setItem(urlId, JSON.stringify(updatedList));
-    ingredientsArray.value = updatedList;
+    mealStore.ingredients = updatedList;
 
     observer(itemId).then((component) => {
       const top = component.getBoundingClientRect().top;
-      const yDistance = mealState.animation.originPositionTop - (top as number);
+      const yDistance = animStore.originPositionTop - (top as number);
       component.offsetHeight;
       component.style.transform = `translateY(${yDistance}px)`;
       requestAnimationFrame(() => {
+        component.classList.add("animate-zIndexWhileMoving");
         component.style.transition = "transform 1000ms ease-in-out";
-        component.style.zIndex = "30";
         component.style.transform = "";
-        component.style.transition = "transform 1000ms ease-in-out";
       });
     });
-    mealState.animation.idOfComponentToMove = 0;
   });
 
   return (
@@ -108,7 +112,7 @@ export default component$(() => {
             <h2 class="text-center font-bold dark:text-slate-50">
               Handleliste
             </h2>
-            {ingredientsArray.value.map(
+            {mealStore.ingredients.map(
               (ing: Ingredient, i: number) =>
                 !ing.purchased && (
                   <LocalMealIngredient
@@ -116,13 +120,14 @@ export default component$(() => {
                     key={i}
                     index={i}
                     day={urlId}
+                    anim={animStore}
                   />
                 ),
             )}
           </div>
           <div class="p-2 ">
             <h2 class="mt-20 text-center  dark:text-slate-50">Handlet</h2>
-            {ingredientsArray.value.map(
+            {mealStore.ingredients.map(
               (ing: Ingredient, i: number) =>
                 ing.purchased && (
                   <LocalMealIngredient
@@ -130,6 +135,7 @@ export default component$(() => {
                     key={i}
                     index={i}
                     day={urlId}
+                    anim={animStore}
                   />
                 ),
             )}

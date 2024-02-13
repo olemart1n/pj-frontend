@@ -9,7 +9,7 @@ import {
   useOnDocument,
   $,
 } from "@builder.io/qwik";
-import { appContext, mealContext, type MealState, type App } from "~/context";
+import { appContext, type App } from "~/context";
 import { routeAction$, routeLoader$ } from "@builder.io/qwik-city";
 import type { RequestHandler } from "@builder.io/qwik-city";
 import Nav from "../components/nav";
@@ -86,20 +86,10 @@ export default component$(() => {
     isLoggedIn: false,
     ping: false,
     theme: "light",
-  });
-  const mealState: MealState = useStore({
-    meal: null,
-    ingredients: [],
-    animation: {
-      idOfComponentToMove: 0,
-      originPositionTop: 0,
-      targetPositionTop: 0,
-      finished: false,
-    },
     listDeleted: false,
   });
+
   useContextProvider(appContext, appState);
-  useContextProvider(mealContext, mealState);
   const app = useContext(appContext);
   useTask$(() => {
     app.isLoggedIn = routeLoader.value.isAuthenticated ? true : false;

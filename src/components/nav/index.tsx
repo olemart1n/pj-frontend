@@ -5,6 +5,7 @@ import { appContext } from "~/context";
 import { useContext } from "@builder.io/qwik";
 import { LuSun, LuMoon } from "@qwikest/icons/lucide";
 import { useSetThemeCookie } from "~/routes/layout";
+import { useLogOut } from "~/routes";
 interface MobileMenu {
   isMobileMenu: Signal;
 }
@@ -13,7 +14,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
   const nav = useNavigate();
   const loc = useSignal<string>("/");
   const themeToggleAction = useSetThemeCookie();
-
+  const logOut = useLogOut();
   return (
     <nav
       class={
@@ -98,19 +99,14 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
             </Link>
             <div class="inline ">
               <button
-                onClick$={() => {
-                  fetch(
-                    import.meta.env.PUBLIC_SERVER_URL + "/api/auth/logout",
-                    {
-                      credentials: "include",
-                    },
-                  ).then((data) => {
-                    if (data.status === 200) {
-                      nav("/");
-                      app.isLoggedIn = false;
-                      isMobileMenu.value = false;
-                    }
-                  });
+                onClick$={async () => {
+                  const req = logOut.submit();
+                  if ((await req).status) {
+                    nav("/");
+                    console.log("logged out");
+                    app.isLoggedIn = false;
+                    isMobileMenu.value = false;
+                  }
                 }}
                 class="text-sm font-semibold leading-6 text-slate-200"
               >

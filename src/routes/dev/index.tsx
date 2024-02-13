@@ -7,10 +7,11 @@ export default component$(() => {
       <h1>Devving components</h1>
       <div class="align-center flex h-full w-full flex-row ">
         <BtnWithLoader
-          innerText="Send"
           isLoading={isLoading}
           onClick$={() => console.log("hello")}
-        />
+        >
+          Hello
+        </BtnWithLoader>
       </div>
     </>
   );

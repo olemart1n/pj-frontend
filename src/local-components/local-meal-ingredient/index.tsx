@@ -1,17 +1,21 @@
-import { component$, useSignal, useContext } from "@builder.io/qwik";
+import { component$, useSignal } from "@builder.io/qwik";
 import { LuPencil } from "@qwikest/icons/lucide";
 import type { Ingredient } from "~/utilities/types/ingredient";
 import { togglePurchased } from "~/utilities/localstorage";
-import { mealContext } from "~/context";
 
 interface IngredientObj {
   props: Ingredient;
   index: number;
   day?: string;
+  anim: AnimProps;
+}
+interface AnimProps {
+  idOfComponentToMove: number;
+  originPositionTop: number;
+  targetPositionTop: number;
 }
 export const LocalMealIngredient = component$<IngredientObj>(
-  ({ props, index, day }) => {
-    const mealState = useContext(mealContext);
+  ({ props, index, day, anim }) => {
     const isPurchased = props.purchased;
     const isToggled = useSignal(isPurchased);
     const thisEl = useSignal<HTMLDivElement>();
@@ -45,8 +49,8 @@ export const LocalMealIngredient = component$<IngredientObj>(
                 onChange$={() => {
                   if (!thisEl.value) return;
                   const { top } = thisEl.value.getBoundingClientRect();
-                  mealState.animation.idOfComponentToMove = props.id;
-                  mealState.animation.originPositionTop = top;
+                  anim.idOfComponentToMove = props.id;
+                  anim.originPositionTop = top;
 
                   day && togglePurchased(day, index);
                   isToggled.value = !isToggled.value;

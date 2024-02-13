@@ -1,20 +1,14 @@
-import {
-  $,
-  component$,
-  useContext,
-  useSignal,
-  type Signal,
-} from "@builder.io/qwik";
+import { $, component$, useSignal, type Signal } from "@builder.io/qwik";
 import { useDbInsertIngredient } from "~/routes/[id]";
-import { mealContext } from "~/context";
 import type { Ingredient } from "~/utilities/types";
 interface ToggleDropDown {
   form: Signal;
   dropdown: Signal;
+  ingredientList: Ingredient[];
+  mealId: string;
 }
 export const MealIngredientForm = component$<ToggleDropDown>(
-  ({ form, dropdown }) => {
-    const mealState = useContext(mealContext);
+  ({ form, dropdown, ingredientList, mealId }) => {
     const action = useDbInsertIngredient();
     const formData = useSignal<HTMLFormElement>();
     const submit = $(async () => {
@@ -22,14 +16,14 @@ export const MealIngredientForm = component$<ToggleDropDown>(
       const inputs = Object.fromEntries(data.entries());
       const response = await action.submit({
         ...inputs,
-        meal_id: mealState.meal?.id,
+        meal_id: mealId,
       });
 
-      if (response.status)
-        mealState.ingredients.push(response.value.data as Ingredient);
-
-      form.value = false;
-      dropdown.value = false;
+      if (response.status) {
+        ingredientList.push(response.value.data as Ingredient);
+        form.value = false;
+        dropdown.value = false;
+      }
     });
 
     return (
