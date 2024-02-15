@@ -3,7 +3,7 @@ import { Link, useNavigate } from "@builder.io/qwik-city";
 import { Icon } from "./icon";
 import { appContext } from "~/context";
 import { useContext } from "@builder.io/qwik";
-import { LuSun, LuMoon } from "@qwikest/icons/lucide";
+import { LuSun, LuMoon, LuMoreVertical } from "@qwikest/icons/lucide";
 import { useSetThemeCookie } from "~/routes/layout";
 import { useLogOut } from "~/routes";
 interface MobileMenu {
@@ -41,20 +41,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
           }}
         >
           <span class="sr-only">Open main menu</span>
-          <svg
-            class="h-10 w-10 dark:text-slate-50"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-            />
-          </svg>
+          <LuMoreVertical class="h-10 w-10 font-bold text-slate-800 dark:text-white" />
         </button>
       </div>
       {/* -------------------- */}
@@ -65,7 +52,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
         class={
           "z-20 w-1/2 justify-around gap-2 p-2  text-lg text-gray-900 dark:text-white lg:flex lg:flex-row " +
           (isMobileMenu.value
-            ? " fixed top-16 flex w-full flex-col bg-sky-950 text-center"
+            ? " fixed top-20 flex w-full flex-col bg-white text-center dark:bg-sky-950"
             : " hidden")
         }
       >
@@ -74,7 +61,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
             <Link
               href="/handleliste"
               class={
-                " font-semibold leading-6 text-slate-200 " +
+                " font-semibold leading-6  " +
                 (loc.value === "handleliste" && "underline")
               }
               onClick$={() => {
@@ -87,7 +74,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
             <Link
               href="/profil"
               class={
-                " font-semibold leading-6 text-slate-200 " +
+                " font-semibold leading-6  " +
                 (loc.value === "profil" && "underline")
               }
               onClick$={() => {
@@ -108,7 +95,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
                     isMobileMenu.value = false;
                   }
                 }}
-                class="text-sm font-semibold leading-6 text-slate-200"
+                class="text-sm font-semibold leading-6 "
               >
                 Logg ut <span aria-hidden="true">&rarr;</span>
               </button>
@@ -118,7 +105,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
         {!app.isLoggedIn && (
           <Link
             href="/logg-inn"
-            class="text-md  font-semibold leading-6 text-slate-200 "
+            class="text-md  font-semibold leading-6 "
             onClick$={() => (isMobileMenu.value = false)}
           >
             Logg inn <span aria-hidden="true">&rarr;</span>

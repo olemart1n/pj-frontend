@@ -1,7 +1,7 @@
 import { component$, useSignal, useStore, useTask$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { getFetchWithJwt } from "~/dryFunctions";
-import { MealIngredient } from "~/components/meal-ingredient";
+import { MealIngredient } from "~/components/meal-page/meal-ingredient";
 import type { Ingredient } from "~/utilities/types";
 import { dbTogglePurchased } from "../[id]";
 export const useDbGetShoppingList = routeLoader$(async (reqEv) => {

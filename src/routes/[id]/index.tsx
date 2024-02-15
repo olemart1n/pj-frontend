@@ -11,8 +11,9 @@ import {
   server$,
   routeLoader$,
 } from "@builder.io/qwik-city";
-import { MealIngredient } from "~/components/meal-ingredient";
-import { MealDropdown } from "~/components/meal-dropdown";
+import { MealIngredient } from "~/components/meal-page/meal-ingredient";
+import { MealDropdown } from "~/components/meal-page/meal-dropdown";
+import { MealChoose } from "~/components/meal-page/meal-choose";
 // import { Loader } from "~/components/loader";
 import type { Ingredient, Meal } from "~/utilities/types";
 import {
@@ -20,7 +21,7 @@ import {
   postFetchWithJwt,
   deleteFetchWithJwt,
 } from "~/dryFunctions";
-import { MealIngredientForm } from "~/components/meal-ingredient-form";
+import { MealIngredientForm } from "~/components/meal-page/meal-ingredient-form";
 import { observer } from "~/utilities/observer";
 import { appContext } from "~/context";
 
@@ -30,6 +31,33 @@ export const useDbInsertIngredient = routeAction$(async (formData, reqEv) => {
 
   const response = postFetchWithJwt("/api/meals/ingredients", jwt, formData);
   return response;
+});
+export const useDbGetMeal = routeLoader$(async (reqEv) => {
+  const jwt = reqEv.cookie.get("jwt");
+  if (!jwt) return null;
+  const name = reqEv.url.pathname.replace(/\//g, "");
+  const { data, error } = await getFetchWithJwt(
+    "/api/meals/meal?name=" + name,
+    jwt,
+  );
+  if (error) {
+    return reqEv.fail(404, {
+      message: "Some error occured",
+    });
+  }
+  return data as ResponseObj;
+});
+export const useDbInsertPremade = routeAction$(async (formData, reqEv) => {
+  const jwt = reqEv.cookie.get("jwt");
+  if (!jwt) return;
+  console.log("Hello from routeAction");
+
+  const { data } = await postFetchWithJwt(
+    "/api/meals/ingredients/premade",
+    jwt,
+    formData,
+  );
+  return data;
 });
 
 export const useDbDeleteMealList = routeAction$(async (data, reqEv) => {
@@ -52,25 +80,10 @@ export const dbTogglePurchased = server$(async function (data) {
   });
 });
 
-export const useDbGetMeal = routeLoader$(async (reqEv) => {
-  interface ResponseObj {
-    meal: Meal;
-    ingredients: Ingredient[];
-  }
-  const jwt = reqEv.cookie.get("jwt");
-  if (!jwt) return null;
-  const name = reqEv.url.pathname.replace(/\//g, "");
-  const { data, error } = await getFetchWithJwt(
-    "/api/meals/meal?name=" + name,
-    jwt,
-  );
-  if (error) {
-    return reqEv.fail(404, {
-      error: error,
-    });
-  }
-  return data as ResponseObj;
-});
+interface ResponseObj {
+  meal: Meal;
+  ingredients: Ingredient[];
+}
 
 // COMPONENT STARTS HERE --------------------------------------------------------
 export default component$(() => {
@@ -81,7 +94,7 @@ export default component$(() => {
   const routeLoader = useDbGetMeal();
 
   if (routeLoader.value.failed) {
-    return <div>some error occured while fetching relevant data</div>;
+    return <p>{routeLoader.value.message}</p>;
   }
   const mealStore = useStore(routeLoader.value);
   const animStore = useStore({
@@ -92,6 +105,7 @@ export default component$(() => {
   const isAddingIngredient = useSignal(false);
   const isDropDown = useSignal(false);
   const deleteAction = useDbDeleteMealList();
+
   // TRACK LIST DELETION
   useTask$(({ track }) => {
     track(() => app.listDeleted);
@@ -136,39 +150,46 @@ export default component$(() => {
     <>
       <div class="flex justify-around p-1">
         <h1 class="my-auto text-xl dark:text-slate-50">{day}</h1>
-        <div class="flex flex-row gap-2">
-          <div class="relative z-30">
-            <button
-              onClick$={() => {
-                isAddingIngredient.value = !isAddingIngredient.value;
-                isDropDown.value = false;
-              }}
-              class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            >
-              + vare
-            </button>
-            {isAddingIngredient.value && (
-              <div
-                class="absolute z-40 mt-2 origin-top-right  -translate-x-1/2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="menu-button"
-                tabIndex={-1}
+        {mealStore.ingredients.length > 0 && (
+          <div class="flex flex-row gap-2">
+            <div class="relative z-30">
+              <button
+                onClick$={() => {
+                  isAddingIngredient.value = !isAddingIngredient.value;
+
+                  isDropDown.value = false;
+                }}
+                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
               >
-                <MealIngredientForm
-                  form={isAddingIngredient}
-                  dropdown={isDropDown}
-                  ingredientList={mealStore.ingredients}
-                  mealId={mealStore.meal.id}
-                />
-              </div>
-            )}
+                + vare
+              </button>
+              {isAddingIngredient.value && (
+                <div
+                  class="absolute z-40 mt-2 origin-top-right  -translate-x-1/2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="menu-button"
+                  tabIndex={-1}
+                >
+                  <MealIngredientForm
+                    form={isAddingIngredient}
+                    dropdown={isDropDown}
+                    ingredientList={mealStore.ingredients}
+                    mealId={mealStore.meal.id}
+                  />
+                </div>
+              )}
+            </div>
+            <MealDropdown form={isAddingIngredient} dropdown={isDropDown} />
           </div>
-          <MealDropdown form={isAddingIngredient} dropdown={isDropDown} />
-        </div>
+        )}
       </div>
 
-      {
+      {mealStore.ingredients.length === 0 && (
+        <MealChoose mealId={mealStore.meal.id} store={mealStore} />
+      )}
+
+      {mealStore.ingredients.length > 0 && (
         <>
           <div class=" p-2">
             <h2 class="text-center font-bold dark:text-slate-50">
@@ -191,7 +212,7 @@ export default component$(() => {
             )}
           </div>
         </>
-      }
+      )}
     </>
   );
 });

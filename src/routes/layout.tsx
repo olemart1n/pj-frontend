@@ -25,15 +25,6 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   });
 };
 
-export const useServerTimeLoader = routeLoader$(() => {
-  const localDate = new Date();
-  localDate.setHours(localDate.getHours() + 1);
-  const dateString = localDate.toISOString();
-  return {
-    date: dateString,
-  };
-});
-
 export const useSetThemeCookie = routeAction$(async (_, reqEv) => {
   const theme = reqEv.cookie.get("theme");
   if (theme?.value === "dark") {
@@ -66,7 +57,6 @@ export const useDbCheckJwt = routeLoader$(async (reqEv) => {
 });
 
 export default component$(() => {
-  const serverTime = useServerTimeLoader();
   const routeLoader = useDbCheckJwt();
   const isMobileMenuActive = useSignal(false);
   const headerDiv = useSignal<HTMLElement>();
@@ -99,7 +89,10 @@ export default component$(() => {
   return (
     <>
       <header
-        class={" z-40 bg-sky-950  p-0" + (app.theme === "dark" && " dark ")}
+        class={
+          "z-4 p-0 transition-all duration-200 " +
+          (app.theme === "dark" && " dark bg-sky-950 ")
+        }
         ref={headerDiv}
       >
         <Nav isMobileMenu={isMobileMenuActive} />
@@ -117,7 +110,6 @@ export default component$(() => {
       <footer class={"bg-slate-200 p-0 text-lg " + app.theme}>
         <div class="dark flex w-full justify-around p-3 dark:bg-sky-700 dark:text-white">
           <span>Just for fun</span>
-          <span>{serverTime.value.date}</span>
         </div>
       </footer>
     </>
