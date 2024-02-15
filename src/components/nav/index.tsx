@@ -50,7 +50,7 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
         aria-modal="true"
         id=""
         class={
-          "z-20 w-1/2 justify-around gap-2 p-2  text-lg text-gray-900 dark:text-white lg:flex lg:flex-row " +
+          "z-40 w-1/2 justify-around gap-2 p-2  text-lg text-gray-900 dark:text-white lg:flex lg:flex-row " +
           (isMobileMenu.value
             ? " fixed top-20 flex w-full flex-col bg-white text-center dark:bg-sky-950"
             : " hidden")
