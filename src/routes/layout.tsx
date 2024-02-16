@@ -48,12 +48,15 @@ export const useDbCheckJwt = routeLoader$(async (reqEv) => {
   };
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return returnObj;
-  const response = await getFetchWithJwt("/api/auth/checkjwt", jwt);
-  const { isAuthenticated } = response;
+  const { isAuthenticated } = await getFetchWithJwt("/v1/auth/checkjwt", jwt);
+
   if (isAuthenticated) {
     returnObj.isAuthenticated = true;
     return returnObj;
-  } else return returnObj;
+  } else {
+    reqEv.cookie.delete("jwt");
+    return returnObj;
+  }
 });
 
 export default component$(() => {

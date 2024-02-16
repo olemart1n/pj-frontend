@@ -29,7 +29,7 @@ export const useDbInsertIngredient = routeAction$(async (formData, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
 
-  const response = postFetchWithJwt("/api/meals/ingredients", jwt, formData);
+  const response = postFetchWithJwt("/v1/meals/ingredients", jwt, formData);
   return response;
 });
 export const useDbGetMeal = routeLoader$(async (reqEv) => {
@@ -37,7 +37,7 @@ export const useDbGetMeal = routeLoader$(async (reqEv) => {
   if (!jwt) return null;
   const name = reqEv.url.pathname.replace(/\//g, "");
   const { data, error } = await getFetchWithJwt(
-    "/api/meals/meal?name=" + name,
+    "/v1/meals/meal?name=" + name,
     jwt,
   );
   if (error) {
@@ -53,7 +53,7 @@ export const useDbInsertPremade = routeAction$(async (formData, reqEv) => {
   console.log("Hello from routeAction");
 
   const { data } = await postFetchWithJwt(
-    "/api/meals/ingredients/premade",
+    "/v1/meals/ingredients/premade",
     jwt,
     formData,
   );
@@ -63,13 +63,13 @@ export const useDbInsertPremade = routeAction$(async (formData, reqEv) => {
 export const useDbDeleteMealList = routeAction$(async (data, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
-  await deleteFetchWithJwt("/api/meals/ingredients", jwt, data);
+  await deleteFetchWithJwt("/v1/meals/ingredients", jwt, data);
 });
 export const dbTogglePurchased = server$(async function (data) {
   const reqEv = this;
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
-  await fetch(import.meta.env.PUBLIC_SERVER_URL + "/api/meals/ingredients", {
+  await fetch(import.meta.env.PUBLIC_SERVER_URL + "/v1/meals/ingredients", {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

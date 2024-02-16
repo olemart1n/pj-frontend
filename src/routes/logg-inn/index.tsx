@@ -17,7 +17,7 @@ export default component$(() => {
     if (!emailRef.value?.validity.valid) return;
     isLoading.value = true;
     const req = await fetch(
-      import.meta.env.PUBLIC_SERVER_URL + "/api/auth/sign",
+      import.meta.env.PUBLIC_SERVER_URL + "/v1/auth/sign",
       {
         method: "POST",
         headers: {
@@ -49,7 +49,7 @@ export default component$(() => {
     <div class="mx-auto  ">
       <div class="mx-auto mt-16  grid w-fit space-y-4">
         <a
-          href={import.meta.env.PUBLIC_SERVER_URL + "/api/auth/google"}
+          href={import.meta.env.PUBLIC_SERVER_URL + "/v1/auth/google"}
           class="group flex h-10 rounded-full border-2 border-gray-300 px-6 
  align-middle transition duration-300 hover:border-blue-400 focus:bg-blue-50 active:bg-blue-100"
         >
@@ -67,7 +67,7 @@ export default component$(() => {
           </div>
         </a>
         <a
-          href={import.meta.env.PUBLIC_SERVER_URL + "/api/auth/github"}
+          href={import.meta.env.PUBLIC_SERVER_URL + "/v1/auth/github"}
           class="group flex h-10 rounded-full border-2 border-gray-300 px-6 align-middle transition duration-300 
  hover:border-blue-400 focus:bg-blue-50 active:bg-blue-100"
         >

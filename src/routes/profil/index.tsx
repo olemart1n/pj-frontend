@@ -4,7 +4,7 @@ import { dataOrError, getFetchWithJwt } from "~/dryFunctions";
 export const useDbGetUser = routeLoader$(async (reqEv) => {
   const cookie = reqEv.cookie.get("jwt");
   if (!cookie) return;
-  const res = await getFetchWithJwt("/api/users/user", cookie);
+  const res = await getFetchWithJwt("/v1/users/user", cookie);
   console.log(res);
   return dataOrError(res);
 });
@@ -12,7 +12,7 @@ export default component$(() => {
   const isDeleting = useSignal(false);
   const routeData = useDbGetUser();
   const deleteUser = $(async () => {
-    await fetch(import.meta.env.PUBLIC_SERVER_URL + "/api/users/user/delete", {
+    await fetch(import.meta.env.PUBLIC_SERVER_URL + "/v1/users/user/delete", {
       method: "DELETE",
       credentials: "include",
     });

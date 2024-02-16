@@ -7,7 +7,7 @@ import { dbTogglePurchased } from "../[id]";
 export const useDbGetShoppingList = routeLoader$(async (reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
-  const response = await getFetchWithJwt("/api/meals/ingredients", jwt);
+  const response = await getFetchWithJwt("/v1/meals/ingredients", jwt);
   return response;
 });
 export default component$(() => {
