@@ -90,7 +90,6 @@ export default component$<MobileMenu>(({ isMobileMenu }) => {
                   const req = logOut.submit();
                   if ((await req).status) {
                     nav("/");
-                    console.log("logged out");
                     app.isLoggedIn = false;
                     isMobileMenu.value = false;
                   }
