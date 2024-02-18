@@ -14,7 +14,6 @@ import {
 import { MealIngredient } from "~/components/meal-page/meal-ingredient";
 import { MealDropdown } from "~/components/meal-page/meal-dropdown";
 import { MealChoose } from "~/components/meal-page/meal-choose";
-// import { Loader } from "~/components/loader";
 import type { Ingredient, Meal } from "~/utilities/types";
 import {
   getFetchWithJwt,
@@ -50,8 +49,6 @@ export const useDbGetMeal = routeLoader$(async (reqEv) => {
 export const useDbInsertPremade = routeAction$(async (formData, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
   if (!jwt) return;
-  console.log("Hello from routeAction");
-
   const { data } = await postFetchWithJwt(
     "/v1/meals/ingredients/premade",
     jwt,
@@ -102,6 +99,7 @@ export default component$(() => {
     originPositionTop: 0,
     targetPositionTop: 0,
   });
+
   const isAddingIngredient = useSignal(false);
   const isDropDown = useSignal(false);
   const deleteAction = useDbDeleteMealList();
@@ -150,39 +148,39 @@ export default component$(() => {
     <>
       <div class="flex justify-around p-1">
         <h1 class="my-auto text-xl dark:text-slate-50">{day}</h1>
-        {mealStore.ingredients.length > 0 && (
-          <div class="flex flex-row gap-2">
-            <div class="relative z-30">
-              <button
-                onClick$={() => {
-                  isAddingIngredient.value = !isAddingIngredient.value;
+        {/* {mealStore.ingredients.length > 0 && ( */}
+        <div class="flex flex-row gap-2">
+          <div class="relative z-30">
+            <button
+              onClick$={() => {
+                isAddingIngredient.value = !isAddingIngredient.value;
 
-                  isDropDown.value = false;
-                }}
-                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                isDropDown.value = false;
+              }}
+              class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            >
+              + vare
+            </button>
+            {isAddingIngredient.value && (
+              <div
+                class="absolute z-40 mt-2 origin-top-right  -translate-x-1/2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="menu-button"
+                tabIndex={-1}
               >
-                + vare
-              </button>
-              {isAddingIngredient.value && (
-                <div
-                  class="absolute z-40 mt-2 origin-top-right  -translate-x-1/2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="menu-button"
-                  tabIndex={-1}
-                >
-                  <MealIngredientForm
-                    form={isAddingIngredient}
-                    dropdown={isDropDown}
-                    ingredientList={mealStore.ingredients}
-                    mealId={mealStore.meal.id}
-                  />
-                </div>
-              )}
-            </div>
-            <MealDropdown form={isAddingIngredient} dropdown={isDropDown} />
+                <MealIngredientForm
+                  form={isAddingIngredient}
+                  dropdown={isDropDown}
+                  ingredientList={mealStore.ingredients}
+                  mealId={mealStore.meal.id}
+                />
+              </div>
+            )}
           </div>
-        )}
+          <MealDropdown form={isAddingIngredient} dropdown={isDropDown} />
+        </div>
+        {/* )} */}
       </div>
 
       {mealStore.ingredients.length === 0 && (

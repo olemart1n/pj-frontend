@@ -16,21 +16,21 @@ export default component$(() => {
   const sign = $(async () => {
     if (!emailRef.value?.validity.valid) return;
     isLoading.value = true;
-    const req = await fetch(
-      import.meta.env.PUBLIC_SERVER_URL + "/v1/auth/sign",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email: email.value,
-          password: passord.value,
-          username: isSigningUp.value && username.value,
-        }),
+    const endpoint = isSigningUp.value
+      ? "/v1/auth/sign-up"
+      : "/v1/auth/sign-in";
+    const req = await fetch(import.meta.env.PUBLIC_SERVER_URL + endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      credentials: "include",
+      body: JSON.stringify({
+        email: email.value,
+        password: passord.value,
+        username: isSigningUp.value && username.value,
+      }),
+    });
 
     const { data, error } = await req.json();
     if (data) {
