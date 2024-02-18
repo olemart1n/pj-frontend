@@ -4,6 +4,7 @@ import {
   useSignal,
   useStore,
   useTask$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 import {
   useLocation,
@@ -23,6 +24,8 @@ import {
 import { MealIngredientForm } from "~/components/meal-page/meal-ingredient-form";
 import { observer } from "~/utilities/observer";
 import { appContext } from "~/context";
+import { QwikLottie } from "~/components/UI/qwik-lottie";
+import lottieLoaderJson from "../../utilities/lottie-json/lottie-loader.json";
 
 export const useDbInsertIngredient = routeAction$(async (formData, reqEv) => {
   const jwt = reqEv.cookie.get("jwt");
@@ -87,6 +90,7 @@ export default component$(() => {
   const app = useContext(appContext);
   const urlId = useLocation().params.id;
   const day = urlId.replace("-", " ");
+  const preAnimation = useSignal(true);
   //
   const routeLoader = useDbGetMeal();
 
@@ -103,7 +107,12 @@ export default component$(() => {
   const isAddingIngredient = useSignal(false);
   const isDropDown = useSignal(false);
   const deleteAction = useDbDeleteMealList();
-
+  // eslint-disable-next-line qwik/no-use-visible-task
+  useVisibleTask$(() => {
+    setTimeout(() => {
+      preAnimation.value = false;
+    }, 1500);
+  });
   // TRACK LIST DELETION
   useTask$(({ track }) => {
     track(() => app.listDeleted);
@@ -148,7 +157,7 @@ export default component$(() => {
     <>
       <div class="flex justify-around p-1">
         <h1 class="my-auto text-xl dark:text-slate-50">{day}</h1>
-        {/* {mealStore.ingredients.length > 0 && ( */}
+
         <div class="flex flex-row gap-2">
           <div class="relative z-30">
             <button
@@ -180,35 +189,47 @@ export default component$(() => {
           </div>
           <MealDropdown form={isAddingIngredient} dropdown={isDropDown} />
         </div>
-        {/* )} */}
       </div>
-
-      {mealStore.ingredients.length === 0 && (
-        <MealChoose mealId={mealStore.meal.id} store={mealStore} />
-      )}
-
-      {mealStore.ingredients.length > 0 && (
+      {preAnimation.value ? (
+        <QwikLottie animationData={lottieLoaderJson} />
+      ) : (
         <>
-          <div class=" p-2">
-            <h2 class="text-center font-bold dark:text-slate-50">
-              Handleliste
-            </h2>
-            {mealStore.ingredients.map(
-              (ing: Ingredient, i: number) =>
-                !ing.purchased && (
-                  <MealIngredient props={ing} key={i} animation={animStore} />
-                ),
-            )}
-          </div>
-          <div class="p-2 ">
-            <h2 class="mt-20 text-center  dark:text-slate-50">Handlet</h2>
-            {mealStore.ingredients.map(
-              (ing: Ingredient, i: number) =>
-                ing.purchased && (
-                  <MealIngredient props={ing} key={i} animation={animStore} />
-                ),
-            )}
-          </div>
+          {mealStore.ingredients.length === 0 && (
+            <MealChoose mealId={mealStore.meal.id} store={mealStore} />
+          )}
+
+          {mealStore.ingredients.length > 0 && (
+            <>
+              <div class=" p-2">
+                <h2 class="text-center font-bold dark:text-slate-50">
+                  Handleliste
+                </h2>
+                {mealStore.ingredients.map(
+                  (ing: Ingredient, i: number) =>
+                    !ing.purchased && (
+                      <MealIngredient
+                        props={ing}
+                        key={i}
+                        animation={animStore}
+                      />
+                    ),
+                )}
+              </div>
+              <div class="p-2 ">
+                <h2 class="mt-20 text-center  dark:text-slate-50">Handlet</h2>
+                {mealStore.ingredients.map(
+                  (ing: Ingredient, i: number) =>
+                    ing.purchased && (
+                      <MealIngredient
+                        props={ing}
+                        key={i}
+                        animation={animStore}
+                      />
+                    ),
+                )}
+              </div>
+            </>
+          )}
         </>
       )}
     </>

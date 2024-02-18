@@ -7,8 +7,6 @@ import {
 import { Link } from "@builder.io/qwik-city";
 import days from "./days";
 import { appContext } from "~/context";
-import { QwikLottie } from "~/components/UI/qwik-lottie";
-import lottieLoaderJson from "../../utilities/lottie-json/lottie-loader.json";
 export const DaysCalendar = component$(() => {
   const app = useContext(appContext);
   const isLoggedIn = useSignal(app.isLoggedIn);
@@ -38,13 +36,11 @@ interface LinkButtonProps {
 
 export const Child = component$<LinkButtonProps>(
   ({ date, name, day, index, isLoggedIn }) => {
-    const isClicked = useSignal(false);
-    return !isClicked.value ? (
+    return (
       <Link
         key={index}
         href={(!isLoggedIn.value ? "/local" : "") + "/" + name}
-        class=" h-20 w-20 rounded bg-slate-50 p-3  shadow shadow-gray-50 drop-shadow-lg hover:bg-cyan-700 sm:mx-auto sm:flex sm:w-fit "
-        onClick$={() => (isClicked.value = true)}
+        class=" h-20 w-20 rounded bg-slate-50 p-3  shadow shadow-gray-50 drop-shadow-lg transition-all duration-100 hover:bg-cyan-700 sm:mx-auto sm:flex sm:w-fit "
       >
         <div>
           <h3>{date}</h3>
@@ -54,10 +50,6 @@ export const Child = component$<LinkButtonProps>(
           <p class="text-lg">{name}</p>
         </div>
       </Link>
-    ) : (
-      <div class="h-20 w-20">
-        <QwikLottie animationData={lottieLoaderJson} />
-      </div>
     );
   },
 );
